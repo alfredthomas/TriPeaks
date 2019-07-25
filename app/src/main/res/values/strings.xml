@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Peaked</string>
+    <string name="newgame">New Game</string>
+    <string name="mainmenu">Main Menu</string>
+    <string name="standard">Standard</string>
+    <string name="diamond">Diamond</string>
+
+    <string name="gamemode">GAMEMODE</string>
+    <string name="onepyramidgame">GAME_ONE_PYRAMID</string>
+    <string name="twopyramidgame">GAME_TWO_PYRAMID</string>
+    <string name="threepyramidgame">GAME_THREE_PYRAMID</string>
+    <string name="fourpyramidgame">GAME_FOUR_PYRAMID</string>
+    <string name="onediamondgame">GAME_ONE_DIAMOND</string>
+    <string name="twodiamondgame">GAME_TWO_DIAMOND</string>
+    <string name="threediamondgame">GAME_THREE_DIAMOND</string>
+    <string name="fourdiamondgame">GAME_FOUR_DIAMOND</string>
+
+    <string name="youwin">You Win!!! \n Start a new game!</string>
+    <string-array name="rank">
+        <item>A</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>J</item>
+        <item>Q</item>
+        <item>K</item>
+    </string-array>
+    <string-array name="suit">
+        <item>♣</item>
+        <item>♦</item>
+        <item>♥</item>
+        <item>♠</item>
+    </string-array>
+</resources>

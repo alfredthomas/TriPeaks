@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+                                             android:layout_height="match_parent">
+
+    <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+            <TextView
+                    android:text="@string/standard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/standardheader"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display1" android:gravity="center"/>
+            <Button
+                    android:text="@string/onepyramidgame"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp"
+                    android:onClick="startGame"
+                    android:id="@+id/onePyramidButton"/>
+            <Button
+                    android:text="@string/twopyramidgame"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp"
+                    android:onClick="startGame"
+                    android:id="@+id/TwoPyramidButton"/>
+            <Button
+                    android:text="@string/threepyramidgame"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp"
+                    android:onClick="startGame"
+                    android:id="@+id/ThreePyramidButton"/>
+            <Button
+                    android:text="@string/fourpyramidgame"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp"
+                    android:onClick="startGame"
+                    android:id="@+id/FourPyramidButton"/>
+            <TextView
+                    android:text="@string/diamond"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/diamondheader"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display1" android:gravity="center"/>
+            <Button
+                    android:text="@string/onediamondgame"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp"
+                    android:onClick="startGame"
+                    android:id="@+id/OneDiamondButton"/>
+            <Button
+                    android:text="@string/twodiamondgame"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp"
+                    android:onClick="startGame"
+                    android:id="@+id/TwoDiamondButton"/>
+            <Button
+                    android:text="@string/threediamondgame"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp"
+                    android:onClick="startGame"
+                    android:id="@+id/ThreeDiamondButton"/>
+            <Button
+                    android:text="@string/fourdiamondgame"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp"
+                    android:onClick="startGame"
+                    android:id="@+id/FourDiamondButton"/>
+        </LinearLayout>
+    </ScrollView>
+</android.support.constraint.ConstraintLayout>
