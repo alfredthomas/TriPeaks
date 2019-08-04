@@ -2,8 +2,6 @@ package com.alfredthomas.tripeaks.UI;
 
 import android.content.Context;
 import android.view.View;
-import android.view.ViewGroup;
-import com.alfredthomas.tripeaks.MainActivity;
 import com.alfredthomas.tripeaks.Settings;
 import com.alfredthomas.tripeaks.card.Card;
 
@@ -30,7 +28,7 @@ public class StackView extends ImprovedView {
             }
         });
     }
-    public void setCards( List<Card> cardsList)
+    public void setCards( List<Card> cardsList,int stackSize)
     {
         for(int i = 0;i<cardsList.size();i++)
         {
@@ -43,12 +41,22 @@ public class StackView extends ImprovedView {
                 cards.get(i).setCard(cardsList.get(i),false);
             }
         }
-        current = cardsList.size()-1;
-        deal();
+        current = stackSize == -1?cardsList.size()-1:stackSize;
+        if(stackSize == -1)
+            deal();
     }
 
     public PlayingCardView getDiscard() {
         return discard;
+    }
+
+    public Card getDiscardCard()
+    {
+        return discard.card;
+    }
+    public int getCurrent()
+    {
+        return current;
     }
 
     public void deal()
@@ -74,7 +82,7 @@ public class StackView extends ImprovedView {
         float percentShown = 0.2f;
         int padding = Settings.getPadding();
 
-        int width = MeasureSpec.getSize(widthMeasureSpec)-(int)(2*padding);
+        int width = MeasureSpec.getSize(widthMeasureSpec)-(2*padding);
         int height = MeasureSpec.getSize(heightMeasureSpec);
 
 

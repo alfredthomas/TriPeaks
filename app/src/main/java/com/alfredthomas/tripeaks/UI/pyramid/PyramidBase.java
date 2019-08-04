@@ -44,7 +44,7 @@ public abstract class PyramidBase extends ImprovedView{
         stackViewWeakReference = new WeakReference<>(stackView);
     }
 
-    public void setCards(List<Card> cardsList)
+    public void setCards(List<Card> cardsList, List<Integer> visibility,boolean[] flipStatus)
     {
         won = false;
 
@@ -59,7 +59,7 @@ public abstract class PyramidBase extends ImprovedView{
         for(int i = 0; i< cardsList.size();i++)
         {
             //index of the last row
-            boolean flipped = getStartIndex(rowSize.length-1)<=i;
+            boolean flipped = flipStatus == null? getStartIndex(rowSize.length-1)<=i:flipStatus[i];
             PlayingCardView cardView;
             if(i>= cards.size())
             {
@@ -73,7 +73,10 @@ public abstract class PyramidBase extends ImprovedView{
             }
             final int index = i;
             cardView.setCard(cardsList.get(i),flipped);
-            cardView.setVisibility(VISIBLE);
+            if(visibility == null || visibility.isEmpty())
+                cardView.setVisibility(VISIBLE);
+            else
+                cardView.setVisibility(visibility.get(i));
             cardView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -94,6 +97,24 @@ public abstract class PyramidBase extends ImprovedView{
             });
 
         }
+    }
+    public List<Integer> getCardVisibility()
+    {
+        List<Integer> visibility = new ArrayList<>();
+        for(int i = 0; i< cards.size();i++)
+        {
+            visibility.add(cards.get(i).getVisibility());
+        }
+        return visibility;
+    }
+    public boolean[] getFlipStatus()
+    {
+        boolean[] flipStatus = new boolean[cards.size()];
+        for(int i = 0; i< cards.size();i++)
+        {
+            flipStatus[i] = cards.get(i).isFaceUp();
+        }
+        return flipStatus;
     }
     private boolean canDiscard(Card card)
     {
@@ -130,18 +151,13 @@ public abstract class PyramidBase extends ImprovedView{
     }
     private boolean inRange(int i, int arraySize)
     {
-        if(i<0 || i>= arraySize)
-            return false;
-        return true;
+        return !(i<0 || i>= arraySize);
+
     }
     public int getRowSize(int row){
         return inRange(row,rowSize.length)?rowSize[row]:0;
     }
 
-//    public boolean hasGaps(int row)
-//    {
-//        return inRange(row,gaps.length)&&gaps[row];
-//    }
     public int getStartIndex(int row)
     {
         int index = 0;

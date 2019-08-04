@@ -11,6 +11,7 @@ import com.alfredthomas.tripeaks.card.Card;
 import com.alfredthomas.tripeaks.card.Deck;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class GameView extends ImprovedView {
     Deck deck;
@@ -19,16 +20,12 @@ public class GameView extends ImprovedView {
     Button newGameButton;
     Button backButton;
 
-    public GameView(Context context, PyramidBase pyramidView)
+    public GameView(Context context, PyramidBase pyramidView, Deck deck,List<Integer> pyramidViewVisibility, boolean[] flipStatus, int stackSize, Card discard)
     {
         super(context);
         setBackgroundColor(Settings.background);
         stackView = new StackView(context);
         this.pyramidView = pyramidView;
-//        pyramidView = new ThreePyramidView(context);
-//        pyramidView = new FourPyramidView(context);
-//        pyramidView = new OnePyramidView(context);
-//        pyramidView = new TwoPyramidView(context);
         pyramidView.setStackViewWeakReference(stackView);
 
         addView(stackView);
@@ -54,19 +51,48 @@ public class GameView extends ImprovedView {
         });
         addView(newGameButton);
 
-        newGame();
+        this.deck = deck;
+        if(deck == null || deck.getDeck().isEmpty())
+            newGame();
+        else {
+            setCards(pyramidViewVisibility, flipStatus, stackSize);
+            stackView.setDiscard(discard);
+        }
     }
 
     private void newGame()
     {
         if(deck == null)
-            deck = new Deck();
+            deck = new Deck(new ArrayList<Card>());
         deck.shuffle();
+        setCards(null,null,-1);
+    }
 
+    private void setCards(List<Integer> pyramidViewVisibility,boolean[] flipStatus,int stackSize) {
         ArrayList<Card> cards = deck.getDeck();
-        pyramidView.setCards(cards.subList(0,pyramidView.getMaxCards()));
-        stackView.setCards(cards.subList(pyramidView.getMaxCards(),cards.size()));
 
+        pyramidView.setCards(cards.subList(0, pyramidView.getMaxCards()),pyramidViewVisibility,flipStatus);
+        stackView.setCards(cards.subList(pyramidView.getMaxCards(), cards.size()),stackSize);
+    }
+    public Deck getDeck()
+    {
+        return deck;
+    }
+    public List<Integer> getPyramidVisibility()
+    {
+        return pyramidView.getCardVisibility();
+    }
+    public Card getDiscard()
+    {
+        return stackView.getDiscardCard();
+    }
+    public int getDiscardSize()
+    {
+        return stackView.getCurrent();
+    }
+    public boolean[] getFlipStatus()
+    {
+        return pyramidView.getFlipStatus();
     }
 
     @Override

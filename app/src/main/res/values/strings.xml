@@ -4,7 +4,11 @@
     <string name="mainmenu">Main Menu</string>
     <string name="standard">Standard</string>
     <string name="diamond">Diamond</string>
-
+    <string name="deck">DECK</string>
+    <string name="discard">DISCARD</string>
+    <string name="pyramidVISIBILITY">PYRAMID_VISIBILTY</string>
+    <string name="flipstatus">FLIP_STATUS</string>
+    <string name="discardstacksize">DISCARD_STACK_SIZE</string>
     <string name="gamemode">GAMEMODE</string>
     <string name="onepyramidgame">GAME_ONE_PYRAMID</string>
     <string name="twopyramidgame">GAME_TWO_PYRAMID</string>

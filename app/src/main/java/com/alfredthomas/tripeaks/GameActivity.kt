@@ -15,26 +15,40 @@ import android.view.Display
 import android.os.Build
 import android.view.ViewGroup
 import android.view.WindowManager
-
-
+import com.alfredthomas.tripeaks.card.Card
+import com.alfredthomas.tripeaks.card.Deck
+import java.util.ArrayList
 
 
 class GameActivity : AppCompatActivity() {
 
     var gameType:String? = null
     var diamond:Boolean = false
+    var gameView:GameView? = null
+    var deck: Deck? = null
+    var stackSize = -1
+    var pyramidVisibility:List<Int>? = null
+    var discard: Card? = null
+    var flipStatus: BooleanArray? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         when(intent.extras)
         {
-            null ->gameType = savedInstanceState?.getString(getString(R.string.gamemode).toString())
+            null ->{gameType = savedInstanceState?.getString(getString(R.string.gamemode).toString())}
             else ->{
                 gameType = intent.extras?.get(getString(R.string.gamemode).toString()) as String
             }
         }
+        if(savedInstanceState!=null) {
+            deck = savedInstanceState.getParcelable(getString(R.string.deck).toString())
+            stackSize = savedInstanceState.getInt(getString(R.string.discardstacksize).toString(), -1)
+            pyramidVisibility = savedInstanceState.getIntegerArrayList(getString(R.string.pyramidVISIBILITY).toString())
+            discard = savedInstanceState.getParcelable(getString(R.string.discard))
+            flipStatus = savedInstanceState.getBooleanArray(getString(R.string.flipstatus).toString())
 
-
+        }
 
         val pyramidView:PyramidBase
 
@@ -54,11 +68,13 @@ class GameActivity : AppCompatActivity() {
             else -> pyramidView = ThreePyramidView(this)
         }
 
-        val point:Point = Point()
+        val point = Point()
         windowManager.defaultDisplay.getSize(point)
         Settings.calculateCardSize(point.x,resources.displayMetrics.heightPixels-getStatusBar(),resources.displayMetrics.density,pyramidView.peaks,diamond)
 
-        val gameView = GameView(this,pyramidView)
+
+        gameView = GameView(this,pyramidView,deck,pyramidVisibility,flipStatus,stackSize,discard)
+
 
         setContentView(gameView)
     }
@@ -69,8 +85,13 @@ class GameActivity : AppCompatActivity() {
     }
 
 
-    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
-        super.onSaveInstanceState(outState, outPersistentState)
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
         outState?.putString(getString(R.string.gamemode),gameType)
+        outState?.putParcelable(getString(R.string.deck).toString(),gameView?.deck)
+        outState?.putIntegerArrayList(getString(R.string.pyramidVISIBILITY),gameView?.pyramidVisibility as ArrayList<Int>)
+        outState?.putParcelable(getString(R.string.discard).toString(),gameView?.discard)
+        outState?.putInt(getString(R.string.discardstacksize).toString(),gameView!!.discardSize)
+        outState?.putBooleanArray(getString(R.string.flipstatus).toString(),gameView?.flipStatus as BooleanArray)
     }
 }
