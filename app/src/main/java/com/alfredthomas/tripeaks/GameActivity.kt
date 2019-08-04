@@ -30,6 +30,8 @@ class GameActivity : AppCompatActivity() {
     var pyramidVisibility:List<Int>? = null
     var discard: Card? = null
     var flipStatus: BooleanArray? = null
+    var score:Int = 0
+    var streak:Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +49,8 @@ class GameActivity : AppCompatActivity() {
             pyramidVisibility = savedInstanceState.getIntegerArrayList(getString(R.string.pyramidVISIBILITY).toString())
             discard = savedInstanceState.getParcelable(getString(R.string.discard))
             flipStatus = savedInstanceState.getBooleanArray(getString(R.string.flipstatus).toString())
+            score = savedInstanceState.getInt(getString(R.string.currentscore).toString(), 0)
+            streak = savedInstanceState.getInt(getString(R.string.currentstreak).toString(), 0)
 
         }
 
@@ -73,8 +77,8 @@ class GameActivity : AppCompatActivity() {
         Settings.calculateCardSize(point.x,resources.displayMetrics.heightPixels-getStatusBar(),resources.displayMetrics.density,pyramidView.peaks,diamond)
 
 
-        gameView = GameView(this,pyramidView,deck,pyramidVisibility,flipStatus,stackSize,discard)
-
+        gameView = GameView(this,gameType,pyramidView,deck,pyramidVisibility,flipStatus,stackSize,discard)
+        gameView?.setScore(score,streak)
 
         setContentView(gameView)
     }
@@ -93,5 +97,7 @@ class GameActivity : AppCompatActivity() {
         outState?.putParcelable(getString(R.string.discard).toString(),gameView?.discard)
         outState?.putInt(getString(R.string.discardstacksize).toString(),gameView!!.discardSize)
         outState?.putBooleanArray(getString(R.string.flipstatus).toString(),gameView?.flipStatus as BooleanArray)
+        outState?.putInt(getString(R.string.currentscore).toString(),gameView!!.score)
+        outState?.putInt(getString(R.string.currentstreak).toString(),gameView!!.streak)
     }
 }

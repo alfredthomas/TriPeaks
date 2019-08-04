@@ -12,6 +12,7 @@ public class StackView extends ImprovedView {
     List<PlayingCardView> cards = new ArrayList<>();
     PlayingCardView discard;
     int current;
+
     public StackView(Context context) {
         super(context);
         init();
@@ -46,6 +47,7 @@ public class StackView extends ImprovedView {
             deal();
     }
 
+
     public PlayingCardView getDiscard() {
         return discard;
     }
@@ -61,8 +63,12 @@ public class StackView extends ImprovedView {
 
     public void deal()
     {
+
         if(current<0)
-            return;
+        {
+            requestLayout();
+            return;}
+        ((GameView)getParent()).endStreak();
         setDiscard(cards.get(current).card);
         current--;
         requestLayout();
@@ -92,22 +98,24 @@ public class StackView extends ImprovedView {
 
         int fractionWidth = Math.max(0,(int)(percentShown*cardWidth*(cards.size()-1)));
 
+        int partialWidth = (int)((percentShown) * cardWidth);
 
         int xOffset = (width - (padding*2) - (cardWidth*2) - fractionWidth)/2;
 
         int x = padding + xOffset;
         int y = (height/2) - (cardHeight/2);
-        //int cardHeight
-        for(int i = cards.size()-1; i>=0; i--)
+
+        for(int i = current+1; i<cards.size();i++)
         {
-            if(i>current)
-                measureView(cards.get(i),0,0,0,0);
-            else {
-                measureView(cards.get(i), x, y, cardWidth, cardHeight);
-            }
-            x += (percentShown) * cardWidth;
+            measureView(cards.get(i),0,0,0,0);
+            x+=partialWidth;
         }
-        //x=((width/4)*3) - (cardWidth/2);
+        for(int i = 0; i<=current; i++)
+        {
+            measureView(cards.get(i), x, y, cardWidth, cardHeight);
+            x += partialWidth;
+        }
+
         x+= cardWidth;
         measureView(discard, x,  y, cardWidth, cardHeight);
 

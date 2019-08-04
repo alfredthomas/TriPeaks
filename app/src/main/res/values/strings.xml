@@ -2,10 +2,15 @@
     <string name="app_name">Peaked</string>
     <string name="newgame">New Game</string>
     <string name="mainmenu">Main Menu</string>
+    <string name="score">High Score: %1$d\nCurrent Score: %2$d</string>
+
     <string name="standard">Standard</string>
     <string name="diamond">Diamond</string>
     <string name="deck">DECK</string>
     <string name="discard">DISCARD</string>
+    <string name="highscore">HIGHSCORE</string>
+    <string name="currentscore">CURRENTSCORE</string>
+    <string name="currentstreak">CURRENTSTREAK</string>
     <string name="pyramidVISIBILITY">PYRAMID_VISIBILTY</string>
     <string name="flipstatus">FLIP_STATUS</string>
     <string name="discardstacksize">DISCARD_STACK_SIZE</string>
@@ -18,8 +23,10 @@
     <string name="twodiamondgame">GAME_TWO_DIAMOND</string>
     <string name="threediamondgame">GAME_THREE_DIAMOND</string>
     <string name="fourdiamondgame">GAME_FOUR_DIAMOND</string>
-
-    <string name="youwin">You Win!!! \n Start a new game!</string>
+    <plurals name="youwin">
+        <item quantity="one">You Win!!! \nWith %d card to spare!\n Start a new game!</item>
+        <item quantity="other">You Win!!! \nWith %d cards to spare!\n Start a new game!</item>
+    </plurals>
     <string-array name="rank">
         <item>A</item>
         <item>2</item>

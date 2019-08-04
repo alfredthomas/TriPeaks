@@ -1,15 +1,12 @@
 package com.alfredthomas.tripeaks.UI.pyramid;
 
 import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.support.annotation.Nullable;
-import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 import com.alfredthomas.tripeaks.R;
 import com.alfredthomas.tripeaks.Settings;
+import com.alfredthomas.tripeaks.UI.GameView;
 import com.alfredthomas.tripeaks.UI.ImprovedView;
 import com.alfredthomas.tripeaks.UI.PlayingCardView;
 import com.alfredthomas.tripeaks.UI.StackView;
@@ -32,6 +29,8 @@ public abstract class PyramidBase extends ImprovedView{
     int[] rowSize;
     int peaks;
 
+
+
     //AbstractMethods
 
 
@@ -44,6 +43,12 @@ public abstract class PyramidBase extends ImprovedView{
         stackViewWeakReference = new WeakReference<>(stackView);
     }
 
+    private void setWon() {
+
+        winText.setText(getResources().getQuantityString(R.plurals.youwin, stackViewWeakReference.get().getCurrent()+1,stackViewWeakReference.get().getCurrent()+1));
+    }
+
+
     public void setCards(List<Card> cardsList, List<Integer> visibility,boolean[] flipStatus)
     {
         won = false;
@@ -51,7 +56,6 @@ public abstract class PyramidBase extends ImprovedView{
         if(winText == null)
         {
             winText = new TextView(getContext());
-            winText.setText(R.string.youwin);
             winText.setGravity(Gravity.CENTER);
             winText.setTextSize(10f*getResources().getDisplayMetrics().density);
             addView(winText);
@@ -86,10 +90,15 @@ public abstract class PyramidBase extends ImprovedView{
                         stackViewWeakReference.get().setDiscard(view.getCard());
                         v.setVisibility(INVISIBLE);
                         if (index < rowSize[0])
+                        {
                             checkWin();
+                            ((GameView)PyramidBase.this.getParent()).peakCleared();
+                        }
                         else {
                             flipleft(index);
                             flipright(index);
+                            ((GameView)PyramidBase.this.getParent()).cardCleared();
+
                         }
                         requestLayout();
                     }
@@ -146,6 +155,10 @@ public abstract class PyramidBase extends ImprovedView{
         for(int i = 1; i<rowSize[0]; i++) {
             won = won && cards.get(i).getVisibility()==INVISIBLE;
         }
+        if(won) {
+            ((GameView) getParent()).peakCleared();
+            setWon();
+        }
         requestLayout();
 
     }
@@ -199,7 +212,7 @@ public abstract class PyramidBase extends ImprovedView{
     }
     public boolean leftgone(int index)
     {
-        return this.leftParent[index] !=-1 && ((diamond && getRow(index)>getMid() && this.rightParent[index-1] != this.leftParent[index]) || (inRange(index+1,cards.size())&&this.rightParent[index-1] == this.leftParent[index] && cards.get(index-1).getVisibility()==INVISIBLE));
+        return this.leftParent[index] !=-1 && ((diamond && getRow(index)>getMid() && this.rightParent[index-1] != this.leftParent[index]) || (inRange(index-1,cards.size())&&this.rightParent[index-1] == this.leftParent[index] && cards.get(index-1).getVisibility()==INVISIBLE));
     }
 
     //check if right neightbor if hidden or doesn't exist
