@@ -2,8 +2,9 @@
     <string name="app_name">Peaked</string>
     <string name="newgame">New Game</string>
     <string name="mainmenu">Main Menu</string>
+    <string name="close">Close</string>
     <string name="score">High Score: %1$d\nCurrent Score: %2$d</string>
-
+    <string name="endgame">ENDOFGAME</string>
     <string name="standard">Standard</string>
     <string name="diamond">Diamond</string>
     <string name="deck">DECK</string>
@@ -15,18 +16,18 @@
     <string name="flipstatus">FLIP_STATUS</string>
     <string name="discardstacksize">DISCARD_STACK_SIZE</string>
     <string name="gamemode">GAMEMODE</string>
-    <string name="onepyramidgame">GAME_ONE_PYRAMID</string>
-    <string name="twopyramidgame">GAME_TWO_PYRAMID</string>
-    <string name="threepyramidgame">GAME_THREE_PYRAMID</string>
-    <string name="fourpyramidgame">GAME_FOUR_PYRAMID</string>
-    <string name="onediamondgame">GAME_ONE_DIAMOND</string>
-    <string name="twodiamondgame">GAME_TWO_DIAMOND</string>
-    <string name="threediamondgame">GAME_THREE_DIAMOND</string>
-    <string name="fourdiamondgame">GAME_FOUR_DIAMOND</string>
     <plurals name="youwin">
         <item quantity="one">You Win!!! \nWith %d card to spare!\n Start a new game!</item>
         <item quantity="other">You Win!!! \nWith %d cards to spare!\n Start a new game!</item>
     </plurals>
+    <string name="youlose">Out of moves!\nStart a new game!</string>
+    <string-array name="difficulty">
+        <item>(Unknown)</item>
+        <item>(Easy)</item>
+        <item>(Medium)</item>
+        <item>(Hard)</item>
+        <item>(Hopeless)</item>
+    </string-array>
     <string-array name="rank">
         <item>A</item>
         <item>2</item>

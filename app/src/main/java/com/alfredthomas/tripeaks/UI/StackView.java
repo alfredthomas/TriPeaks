@@ -12,6 +12,7 @@ public class StackView extends ImprovedView {
     List<PlayingCardView> cards = new ArrayList<>();
     PlayingCardView discard;
     int current;
+    public static final int NEW_GAME_STACK_SIZE = Integer.MIN_VALUE;
 
     public StackView(Context context) {
         super(context);
@@ -42,8 +43,8 @@ public class StackView extends ImprovedView {
                 cards.get(i).setCard(cardsList.get(i),false);
             }
         }
-        current = stackSize == -1?cardsList.size()-1:stackSize;
-        if(stackSize == -1)
+        current = stackSize == NEW_GAME_STACK_SIZE?cardsList.size()-1:stackSize;
+        if(stackSize == NEW_GAME_STACK_SIZE)
             deal();
     }
 
@@ -61,6 +62,10 @@ public class StackView extends ImprovedView {
         return current;
     }
 
+    public boolean hasCardsLeft()
+    {
+        return current>=0 || current == NEW_GAME_STACK_SIZE;
+    }
     public void deal()
     {
 
@@ -68,7 +73,7 @@ public class StackView extends ImprovedView {
         {
             requestLayout();
             return;}
-        ((GameView)getParent()).endStreak();
+        ((DashboardView)getParent()).endStreak();
         setDiscard(cards.get(current).card);
         current--;
         requestLayout();
@@ -85,7 +90,7 @@ public class StackView extends ImprovedView {
         super.onMeasure(widthMeasureSpec,heightMeasureSpec);
         //offset by this much when faceUp next card
 
-        float percentShown = 0.2f;
+
         int padding = Settings.getPadding();
 
         int width = MeasureSpec.getSize(widthMeasureSpec)-(2*padding);
@@ -96,9 +101,9 @@ public class StackView extends ImprovedView {
         int cardWidth = Settings.getCardWidth();
         int cardHeight = Settings.getCardHeight();
 
-        int fractionWidth = Math.max(0,(int)(percentShown*cardWidth*(cards.size()-1)));
+        int fractionWidth = Math.max(0,(int)(Settings.discardPercentShown*cardWidth*(cards.size()-1)));
 
-        int partialWidth = (int)((percentShown) * cardWidth);
+        int partialWidth = (int)((Settings.discardPercentShown) * cardWidth);
 
         int xOffset = (width - (padding*2) - (cardWidth*2) - fractionWidth)/2;
 

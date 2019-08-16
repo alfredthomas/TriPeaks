@@ -2,19 +2,10 @@ package com.alfredthomas.tripeaks
 
 import android.graphics.Point
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
-import android.view.View
-import android.view.Window
-import com.alfredthomas.tripeaks.UI.GameView
-import com.alfredthomas.tripeaks.UI.pyramid.*
-import android.R.attr.top
-import android.graphics.Rect
-import android.opengl.ETC1.getHeight
-import android.view.Display
-import android.os.Build
-import android.view.ViewGroup
-import android.view.WindowManager
+import com.alfredthomas.tripeaks.UI.DashboardView
+import com.alfredthomas.tripeaks.UI.StackView
+import com.alfredthomas.tripeaks.UI.games.*
 import com.alfredthomas.tripeaks.card.Card
 import com.alfredthomas.tripeaks.card.Deck
 import java.util.ArrayList
@@ -22,66 +13,53 @@ import java.util.ArrayList
 
 class GameActivity : AppCompatActivity() {
 
-    var gameType:String? = null
-    var diamond:Boolean = false
-    var gameView:GameView? = null
+    var gameType:GameType? = null
+    var dashboardView:DashboardView? = null
     var deck: Deck? = null
-    var stackSize = -1
-    var pyramidVisibility:List<Int>? = null
+    var stackSize = StackView.NEW_GAME_STACK_SIZE
+    var cardVisibility:List<Int>? = null
     var discard: Card? = null
     var flipStatus: BooleanArray? = null
     var score:Int = 0
     var streak:Int = 0
+    var endGame:Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         when(intent.extras)
         {
-            null ->{gameType = savedInstanceState?.getString(getString(R.string.gamemode).toString())}
+            null ->{gameType = savedInstanceState?.getParcelable<GameType>(getString(R.string.gamemode).toString())}
             else ->{
-                gameType = intent.extras?.get(getString(R.string.gamemode).toString()) as String
+                gameType = intent.extras?.getParcelable<GameType>(getString(R.string.gamemode).toString())
             }
         }
         if(savedInstanceState!=null) {
             deck = savedInstanceState.getParcelable(getString(R.string.deck).toString())
-            stackSize = savedInstanceState.getInt(getString(R.string.discardstacksize).toString(), -1)
-            pyramidVisibility = savedInstanceState.getIntegerArrayList(getString(R.string.pyramidVISIBILITY).toString())
+            stackSize = savedInstanceState.getInt(getString(R.string.discardstacksize).toString(), StackView.NEW_GAME_STACK_SIZE)
+            cardVisibility = savedInstanceState.getIntegerArrayList(getString(R.string.pyramidVISIBILITY).toString())
             discard = savedInstanceState.getParcelable(getString(R.string.discard))
             flipStatus = savedInstanceState.getBooleanArray(getString(R.string.flipstatus).toString())
             score = savedInstanceState.getInt(getString(R.string.currentscore).toString(), 0)
             streak = savedInstanceState.getInt(getString(R.string.currentstreak).toString(), 0)
+            endGame = savedInstanceState.getBoolean(getString(R.string.endgame),false)
 
-        }
-
-        val pyramidView:PyramidBase
-
-        when(gameType){
-            getString(R.string.onepyramidgame) -> pyramidView = OnePyramidView(this)
-            getString(R.string.twopyramidgame) -> pyramidView = TwoPyramidView(this)
-            getString(R.string.fourpyramidgame) -> pyramidView = FourPyramidView(this)
-            getString(R.string.onediamondgame) -> {pyramidView = OnePyramidView(this,true)
-                                                    diamond = true}
-            getString(R.string.twodiamondgame) -> {pyramidView = TwoPyramidView(this,true)
-                                                     diamond = true}
-            getString(R.string.threediamondgame) -> {pyramidView = ThreePyramidView(this,true)
-                                                    diamond = true}
-            getString(R.string.fourdiamondgame) -> {pyramidView = FourPyramidView(this,true)
-                                                    diamond = true}
-
-            else -> pyramidView = ThreePyramidView(this)
         }
 
         val point = Point()
         windowManager.defaultDisplay.getSize(point)
-        Settings.calculateCardSize(point.x,resources.displayMetrics.heightPixels-getStatusBar(),resources.displayMetrics.density,pyramidView.peaks,diamond)
+        Settings.calculateCardSize(point.x,resources.displayMetrics.heightPixels-getStatusBar(),resources.displayMetrics.density,gameType)
 
 
-        gameView = GameView(this,gameType,pyramidView,deck,pyramidVisibility,flipStatus,stackSize,discard)
-        gameView?.setScore(score,streak)
+        dashboardView = DashboardView(this,gameType,deck,cardVisibility,flipStatus,stackSize,discard)
+        dashboardView?.setScore(score,streak)
 
-        setContentView(gameView)
+        setContentView(dashboardView)
+
+        if(endGame)
+            dashboardView?.showGameEnd()
     }
+
     fun getStatusBar():Int{
         val resource = resources.getIdentifier("status_bar_height", "dimen", "android")
         return resources.getDimensionPixelSize(resource)
@@ -91,13 +69,21 @@ class GameActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        outState?.putString(getString(R.string.gamemode),gameType)
-        outState?.putParcelable(getString(R.string.deck).toString(),gameView?.deck)
-        outState?.putIntegerArrayList(getString(R.string.pyramidVISIBILITY),gameView?.pyramidVisibility as ArrayList<Int>)
-        outState?.putParcelable(getString(R.string.discard).toString(),gameView?.discard)
-        outState?.putInt(getString(R.string.discardstacksize).toString(),gameView!!.discardSize)
-        outState?.putBooleanArray(getString(R.string.flipstatus).toString(),gameView?.flipStatus as BooleanArray)
-        outState?.putInt(getString(R.string.currentscore).toString(),gameView!!.score)
-        outState?.putInt(getString(R.string.currentstreak).toString(),gameView!!.streak)
+        outState?.putParcelable(getString(R.string.gamemode),gameType)
+        outState?.putParcelable(getString(R.string.deck).toString(),dashboardView?.deck)
+        outState?.putIntegerArrayList(getString(R.string.pyramidVISIBILITY),dashboardView?.pyramidVisibility as ArrayList<Int>)
+        outState?.putParcelable(getString(R.string.discard).toString(),dashboardView?.discard)
+        outState?.putInt(getString(R.string.discardstacksize).toString(),dashboardView!!.discardSize)
+        outState?.putBooleanArray(getString(R.string.flipstatus).toString(),dashboardView?.flipStatus as BooleanArray)
+        outState?.putInt(getString(R.string.currentscore).toString(),dashboardView!!.score)
+        outState?.putInt(getString(R.string.currentstreak).toString(),dashboardView!!.streak)
+        if(dashboardView?.dialog!=null)
+            outState?.putBoolean(getString(R.string.endgame),dashboardView!!.dialog.isShowing)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if(dashboardView?.dialog!=null)
+            dashboardView?.dialog?.dismiss()
     }
 }

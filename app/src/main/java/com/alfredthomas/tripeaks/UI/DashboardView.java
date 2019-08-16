@@ -1,23 +1,28 @@
 package com.alfredthomas.tripeaks.UI;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.alfredthomas.tripeaks.GameActivity;
+import com.alfredthomas.tripeaks.GameType;
 import com.alfredthomas.tripeaks.R;
 import com.alfredthomas.tripeaks.Settings;
-import com.alfredthomas.tripeaks.UI.pyramid.*;
+import com.alfredthomas.tripeaks.UI.games.*;
 import com.alfredthomas.tripeaks.card.Card;
 import com.alfredthomas.tripeaks.card.Deck;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameView extends ImprovedView {
+public class DashboardView extends ImprovedView {
     Deck deck;
-    PyramidBase pyramidView;
+    GameBase gameBase;
     StackView stackView;
     Button newGameButton;
     Button backButton;
@@ -26,15 +31,17 @@ public class GameView extends ImprovedView {
     int currentStreak = 0;
     int highScore = 0;
     String gameMode;
+    public AlertDialog dialog;
 
-    public GameView(Context context)
+
+    public DashboardView(Context context)
     {
         super(context);
     }
-    public GameView(Context context, String gameMode, PyramidBase pyramidView, Deck deck,List<Integer> pyramidViewVisibility, boolean[] flipStatus, int stackSize, Card discard)
+    public DashboardView(Context context, GameType gameType, Deck deck, List<Integer> pyramidViewVisibility, boolean[] flipStatus, int stackSize, Card discard)
     {
         super(context);
-        this.gameMode = gameMode;
+        this.gameMode = gameType.getName();
         scoreView = new TextView(context);
         scoreView.setGravity(Gravity.CENTER);
         addView(scoreView);
@@ -42,20 +49,21 @@ public class GameView extends ImprovedView {
         updateScore();
 
         setBackgroundColor(Settings.background);
+
+//        setBackgroundColor(Color.argb(255,0,115,54));
         stackView = new StackView(context);
-        this.pyramidView = pyramidView;
-        pyramidView.setStackViewWeakReference(stackView);
+        this.gameBase = gameType.createGame(context);
+        gameBase.setStackViewWeakReference(stackView);
 
         addView(stackView);
-        addView(pyramidView);
+        addView(gameBase);
 
         backButton = new Button(context);
         backButton.setText(R.string.mainmenu);
         backButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveHighScore();
-                ((GameActivity)(GameView.this.getContext())).finish();
+                endActivity();
             }
         });
         addView(backButton);
@@ -78,7 +86,11 @@ public class GameView extends ImprovedView {
             stackView.setDiscard(discard);
         }
     }
-
+    private void endActivity()
+    {
+        saveHighScore();
+        ((GameActivity)(DashboardView.this.getContext())).finish();
+    }
     private void newGame()
     {
         saveHighScore();
@@ -87,14 +99,7 @@ public class GameView extends ImprovedView {
         if(deck == null)
             deck = new Deck(new ArrayList<Card>());
         deck.shuffle();
-        setCards(null,null,-1);
-    }
-
-    public void cardCleared()
-    {
-        currentStreak++;
-        score+=currentStreak;
-        updateScore();
+        setCards(null,null,StackView.NEW_GAME_STACK_SIZE);
     }
     public void loadHighScore()
     {
@@ -131,18 +136,71 @@ public class GameView extends ImprovedView {
     {
         currentStreak = 0;
     }
-    public void peakCleared()
+    public void cardCleared()
     {
         currentStreak++;
+        score+=currentStreak;
+        updateScore();
+    }
+    public void peakCleared()
+    {
+        cardCleared();
         score+=15;
         updateScore();
     }
 
-    private void setCards(List<Integer> pyramidViewVisibility,boolean[] flipStatus,int stackSize) {
+    public void winBonus()
+    {
+        score+=50;
+        updateScore();
+    }
+    private void setCards(List<Integer> cardViewVisibility,boolean[] flipStatus,int stackSize) {
         ArrayList<Card> cards = deck.getDeck();
 
-        pyramidView.setCards(cards.subList(0, pyramidView.getMaxCards()),pyramidViewVisibility,flipStatus);
-        stackView.setCards(cards.subList(pyramidView.getMaxCards(), cards.size()),stackSize);
+        gameBase.setCards(cards.subList(0, gameBase.getMaxCards()),cardViewVisibility,flipStatus);
+        stackView.setCards(cards.subList(gameBase.getMaxCards(), cards.size()),stackSize);
+    }
+    public void showGameEnd()
+    {
+        final AlertDialog.Builder popup= new AlertDialog.Builder(getContext());
+        final TextView gameEndText = new TextView(getContext());
+        gameEndText.setGravity(Gravity.CENTER);
+        gameEndText.setTextSize(10f*getResources().getDisplayMetrics().density);
+        if(gameBase.getWon())
+        {
+            gameEndText.setText(gameBase.getWinText());
+        }
+        else
+        {
+            gameEndText.setText(R.string.youlose);
+        }
+        popup.setView(gameEndText);
+
+        popup.setNeutralButton(R.string.mainmenu, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                endActivity();
+            }
+        });
+        popup.setNegativeButton(R.string.close, null);
+        popup.setPositiveButton(R.string.newgame, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                newGame();
+            }
+        });
+        dialog = popup.create();
+
+        dialog.show();
+        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)dialog.getButton(DialogInterface.BUTTON_NEUTRAL).getLayoutParams();
+//        lp.gravity = Gravity.CENTER;
+        lp.weight=3;
+
+        dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setLayoutParams(lp);
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setLayoutParams(lp);
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setLayoutParams(lp);
+
+
     }
     public Deck getDeck()
     {
@@ -150,7 +208,7 @@ public class GameView extends ImprovedView {
     }
     public List<Integer> getPyramidVisibility()
     {
-        return pyramidView.getCardVisibility();
+        return gameBase.getCardVisibility();
     }
     public Card getDiscard()
     {
@@ -162,7 +220,7 @@ public class GameView extends ImprovedView {
     }
     public boolean[] getFlipStatus()
     {
-        return pyramidView.getFlipStatus();
+        return gameBase.getFlipStatus();
     }
 
     @Override
@@ -182,9 +240,9 @@ public class GameView extends ImprovedView {
 
 
         y+=heightDiv;
-        measureView(pyramidView,0,y,width,(int)(heightDiv*Settings.pyramidScreenPercent));
+        measureView(gameBase,0,y,width,(int)(heightDiv*Settings.gameScreenPercent));
 
-        y+=(heightDiv*Settings.pyramidScreenPercent);
+        y+=(heightDiv*Settings.gameScreenPercent);
         measureView(stackView,0,y,width,(int)(heightDiv*Settings.discardScreenPercent));
 
     }
